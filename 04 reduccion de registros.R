@@ -29,7 +29,7 @@ plot(1:15, wss, type="b", xlab="Number of Clusters",
 
 # From scree plot elbow occurs at k = 4
 # Apply k-means with k=4
-k <- kmeans(comp, 6, nstart=25, iter.max=1000)
+k <- kmeans(comp, 3, nstart=25, iter.max=1000)
 library(RColorBrewer)
 library(scales)
 palette(alpha(brewer.pal(9,'Set1'), 0.5))
@@ -46,7 +46,7 @@ serie_reducida <- serie_reducida %>% left_join(creditos[,c(1,19)],by="id_fictici
 #prueba de agregar todos 0
 
 clientes <- serie_reducida %>% distinct(id_ficticio)
-
+library(sqldf)
 
 todos_cruces <- sqldf("select * from clientes cross join dias")
 
@@ -76,11 +76,24 @@ agrupada_nueva <- setDT(todos_cruces)[, .(Sum = sum(target), Count = .N), by = c
 agrupada_nueva$tasa_acierto <- agrupada_nueva$Sum/agrupada_nueva$Count
 
 
+fft.c1 <- fft(agrupada_nueva$tasa_acierto[agrupada_nueva$cluster==1])
+fft.c2 <- fft(agrupada_nueva$tasa_acierto[agrupada_nueva$cluster==2])
+fft.c3 <- fft(agrupada_nueva$tasa_acierto[agrupada_nueva$cluster==3])
+"fft.c4 <- fft(agrupada_nueva$tasa_acierto[agrupada_nueva$cluster==4])
+fft.c5 <- fft(agrupada_nueva$tasa_acierto[agrupada_nueva$cluster==5])
+fft.c6 <- fft(agrupada_nueva$tasa_acierto[agrupada_nueva$cluster==6])
+"
+
 with(agrupada_nueva[agrupada_nueva$cluster==1,],plot(tasa_acierto ~ dias,type='l'))
 with(agrupada_nueva[agrupada_nueva$cluster==2,],lines(tasa_acierto ~ dias,type='l',col='red'))
 with(agrupada_nueva[agrupada_nueva$cluster==3,],lines(tasa_acierto ~ dias,type='l',col='green'))
-with(agrupada_nueva[agrupada_nueva$cluster==4,],lines(tasa_acierto ~ dias,type='l',col='blue'))
-with(agrupada_nueva[agrupada_nueva$cluster==5,],lines(tasa_acierto ~ dias,type='l',col='grey'))
-with(agrupada_nueva[agrupada_nueva$cluster==6,],lines(tasa_acierto ~ dias,type='l',col='yellow'))
+#with(agrupada_nueva[agrupada_nueva$cluster==4,],lines(tasa_acierto ~ dias,type='l',col='blue'))
+#with(agrupada_nueva[agrupada_nueva$cluster==5,],lines(tasa_acierto ~ dias,type='l',col='grey'))
+#with(agrupada_nueva[agrupada_nueva$cluster==6,],lines(tasa_acierto ~ dias,type='l',col='yellow'))
+
+
+plot(Mod(fft.c1),type="l")
+lines(Mod(fft.c2),type = 'l',col='red')
+lines(Mod(fft.c3),type = 'l',col='green')
 
 
