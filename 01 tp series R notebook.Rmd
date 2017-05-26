@@ -1,0 +1,73 @@
+---
+title: "Filtrado de serie de tiempo"
+output: html_notebook
+---
+
+Se plotea la serie:
+
+```{r, echo=TRUE}
+
+plot(agrupada$fecha,agrupada$tasa_aciertos,type = "l")
+
+```
+
+Se suaviza la serie con un filtro de media movil y se utiliza Parseval para ver si con 10 componenetes de la frecuencia se puede explicar la serie.
+
+```{r, echo=TRUE}
+
+mv10 <- stats::filter(ts(agrupada[,3]), rep(1/10,10) , circular =TRUE)
+
+fft_serie <- Mod(fft(mv10))
+
+energia_t <- sum(mv10*mv10)
+
+energia_fft <- sum(fft_serie*fft_serie)/length(fft_serie)
+
+fft_serie_ord <-  sort(fft_serie,decreasing = TRUE)
+
+head(fft_serie_ord,10)
+
+valores <- unique(head(fft_serie_ord,10))
+
+energia_acumulada <- sum(valores * valores) / length(fft_serie)
+
+energia_acumulada/energia_t
+
+```
+
+Como el 91% esta explicado con ese criterio, se dejan esos 10 componentes.
+
+Se crean los filtros:
+
+```{r, echo=TRUE}
+filtroDF = rep(1,length(fft_serie))
+filtroDF [1:10] = 0
+filtroDF [(length(fft_serie)-10):length(fft_serie)] = 0
+fft.test = filtroDF*fft_serie
+
+op = par(mfrow = c(1, 2))
+
+
+N.1= length(fft_serie)
+
+tiempo1= 0:(N.1-1)
+
+plot(tiempo1, filtroDF , type="l") #pasa altos
+
+plot(fft_serie,type="l")
+media_sumarla = rep(mean(fft_serie),length(fft_serie))
+plot(Mod(fft_serie)/N.1)
+testDF.inv =  Re(fft(fft.test,inverse=TRUE)/N.1)
+
+media_lean=Mod(fft_serie[1])/N.1
+media_sumarla = rep(media_lean,length(fft_serie))
+
+
+testDF.inv=testDF.inv+media_sumarla
+op = par(mfrow = c(1, 1))
+
+
+plot(agrupada$fecha,testDF.inv,type="l") 
+lines(agrupada$fecha,mv15,col="red",type = 'l')
+```
+
