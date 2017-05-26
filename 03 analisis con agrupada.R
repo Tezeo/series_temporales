@@ -36,3 +36,5 @@ op = par(mfrow = c(1, 1))
 
 plot(tiempo1,anualDF.inv,type="l") 
 lines (tiempo1,agrupada$tasa_aciertos,col="red")
+
+prueba <- readRDS("agrup_cuotas_id.rds")

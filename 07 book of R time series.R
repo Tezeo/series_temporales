@@ -22,12 +22,12 @@ plot(xSMA3)
 componentes_agrupada <- as.ts(x)
 
 plot.ts(componentes_agrupada)
-
+options(OutDec= ".")
 plot.ts(ts(x,start=c(2016,4,1),frequency=365))
 
 plot(x)
 
-attr(x, 'frequency') <- 30 
+attr(x, 'frequency') <- 20 
 
 periodicity(x)             # check periodicity: weekly 
 plot(decompose(as.ts(x)))  # Decompose after conversion to ts
