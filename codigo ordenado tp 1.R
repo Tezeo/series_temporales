@@ -8,6 +8,8 @@ plot(agrupada$fecha,agrupada$tasa_aciertos,type = "l",xlab = "fecha",ylab = "tas
 
 mv10 <- stats::filter(ts(agrupada[,3]), rep(1/10,10) , circular =TRUE)
 
+plot(agrupada$fecha,mv10,type = "l",xlab = "fecha",ylab = "tasa de aciertos")
+
 #se aplica filtro
 fft_serie <- Mod(fft(mv10))
 
